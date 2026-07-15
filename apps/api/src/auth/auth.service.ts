@@ -1,5 +1,9 @@
 // src/auth/auth.service.ts
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
@@ -11,10 +15,20 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signup(email: string, password: string, organizationId: string, role: string) {
+  async signup(
+    email: string,
+    password: string,
+    organizationId: string,
+    role: string,
+  ) {
     const existing = await this.usersService.findByEmail(email);
     if (existing) throw new ConflictException('Email already in use');
-    const user = await this.usersService.create(email, password, organizationId, role);
+    const user = await this.usersService.create(
+      email,
+      password,
+      organizationId,
+      role,
+    );
     return this.issueTokens(user.id, user.organizationId, user.role);
   }
 
@@ -33,10 +47,19 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async refresh(refreshToken: string) {
+  refresh(refreshToken: string) {
     try {
-      const payload = this.jwtService.verify(refreshToken);
-      return this.issueTokens(payload.sub, payload.organizationId, payload.role);
+      type JwtPayload = {
+        sub: string;
+        organizationId: string;
+        role: string;
+      } & Record<string, any>;
+      const payload = this.jwtService.verify<JwtPayload>(refreshToken);
+      return this.issueTokens(
+        payload.sub,
+        payload.organizationId,
+        payload.role,
+      );
     } catch {
       throw new UnauthorizedException('Invalid refresh token');
     }
