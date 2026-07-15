@@ -1,0 +1,8 @@
+{
+  "name": "crm-mvp",
+  "private": true,
+  "workspaces": ["apps/*"],
+  "devDependencies": {
+    "@types/jest": "^30.0.0"
+  }
+}
