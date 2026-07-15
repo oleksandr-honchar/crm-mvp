@@ -8,6 +8,13 @@
       "when": 1784055476420,
       "tag": "0000_crazy_nicolaos",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1784115616395,
+      "tag": "0001_crazy_quasar",
+      "breakpoints": true
     }
   ]
 }

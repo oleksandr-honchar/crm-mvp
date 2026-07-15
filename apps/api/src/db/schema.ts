@@ -17,7 +17,7 @@ export const organizations = pgTable('organizations', {
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
-  organizationId: uuid('organization_id').references(() => organizations.id),
+  organizationId: uuid('organization_id').notNull().references(() => organizations.id),
   email: text('email').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
   role: text('role').notNull(), // 'admin' | 'manager' | 'sales_rep'
@@ -26,7 +26,7 @@ export const users = pgTable('users', {
 
 export const accounts = pgTable('accounts', {
   id: uuid('id').primaryKey().defaultRandom(),
-  organizationId: uuid('organization_id').references(() => organizations.id),
+  organizationId: uuid('organization_id').notNull().references(() => organizations.id),
   name: text('name').notNull(),
   domain: text('domain'),
   ownerId: uuid('owner_id').references(() => users.id),
@@ -36,7 +36,7 @@ export const accounts = pgTable('accounts', {
 
 export const contacts = pgTable('contacts', {
   id: uuid('id').primaryKey().defaultRandom(),
-  organizationId: uuid('organization_id').references(() => organizations.id),
+  organizationId: uuid('organization_id').notNull().references(() => organizations.id),
   accountId: uuid('account_id').references(() => accounts.id),
   firstName: text('first_name'),
   lastName: text('last_name'),
@@ -49,7 +49,7 @@ export const contacts = pgTable('contacts', {
 
 export const pipelines = pgTable('pipelines', {
   id: uuid('id').primaryKey().defaultRandom(),
-  organizationId: uuid('organization_id').references(() => organizations.id),
+  organizationId: uuid('organization_id').notNull().references(() => organizations.id),
   name: text('name').notNull(),
 });
 
@@ -63,7 +63,7 @@ export const pipelineStages = pgTable('pipeline_stages', {
 
 export const deals = pgTable('deals', {
   id: uuid('id').primaryKey().defaultRandom(),
-  organizationId: uuid('organization_id').references(() => organizations.id),
+  organizationId: uuid('organization_id').notNull().references(() => organizations.id),
   accountId: uuid('account_id').references(() => accounts.id),
   contactId: uuid('contact_id').references(() => contacts.id),
   pipelineId: uuid('pipeline_id').references(() => pipelines.id),
@@ -80,7 +80,7 @@ export const deals = pgTable('deals', {
 
 export const leads = pgTable('leads', {
   id: uuid('id').primaryKey().defaultRandom(),
-  organizationId: uuid('organization_id').references(() => organizations.id),
+  organizationId: uuid('organization_id').notNull().references(() => organizations.id),
   name: text('name'),
   email: text('email'),
   company: text('company'),
@@ -97,7 +97,7 @@ export const leads = pgTable('leads', {
 // polymorphic activity log: attaches to contact, deal, account or lead
 export const activities = pgTable('activities', {
   id: uuid('id').primaryKey().defaultRandom(),
-  organizationId: uuid('organization_id').references(() => organizations.id),
+  organizationId: uuid('organization_id').notNull().references(() => organizations.id),
   entityType: text('entity_type').notNull(), // 'contact' | 'deal' | 'account' | 'lead'
   entityId: uuid('entity_id').notNull(),
   type: text('type').notNull(), // 'note' | 'call' | 'email' | 'meeting' | 'task' | 'stage_change'
