@@ -7,10 +7,18 @@ import { AccountsModule } from './accounts/accounts.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { LeadsModule } from './leads/leads.module';
 import { PipelinesModule } from './pipelines/pipelines.module';
-
+import { DealsModule } from './deals/deals.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, AccountsModule, ContactsModule, LeadsModule, PipelinesModule],
+  imports: [
+    AuthModule,
+    UsersModule,
+    AccountsModule,
+    ContactsModule,
+    LeadsModule,
+    PipelinesModule,
+    DealsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -14,7 +14,8 @@
     "sourceMap": true,
     "outDir": "./dist",
     "paths": {
-      "@db/*": ["./src/db/*"]
+      "@db/*": ["./src/db/*"],
+      "@/*": ["./src/*"]
     },
     "incremental": true,
     "skipLibCheck": true,
