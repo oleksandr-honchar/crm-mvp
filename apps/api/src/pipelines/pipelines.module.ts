@@ -7,4 +7,4 @@ import { PipelinesController } from './pipelines.controller';
   providers: [PipelinesService],
   exports: [PipelinesService],
 })
-export class PipelinesModule { }
+export class PipelinesModule {}

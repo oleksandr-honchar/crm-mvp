@@ -1,22 +1,39 @@
 // apps/api/src/leads/leads.service.ts
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { db } from '../db';
 import { leads, accounts, contacts, deals } from '../db/schema';
 import { eq, and } from 'drizzle-orm';
 
 @Injectable()
 export class LeadsService {
-  async create(organizationId: string, ownerId: string, dto: { name?: string; email?: string; company?: string; source?: string }) {
-    const [lead] = await db.insert(leads).values({ organizationId, ownerId, ...dto }).returning();
+  async create(
+    organizationId: string,
+    ownerId: string,
+    dto: { name?: string; email?: string; company?: string; source?: string },
+  ) {
+    const [lead] = await db
+      .insert(leads)
+      .values({ organizationId, ownerId, ...dto })
+      .returning();
     return lead;
   }
 
   async findAll(organizationId: string) {
-    return db.select().from(leads).where(eq(leads.organizationId, organizationId));
+    return db
+      .select()
+      .from(leads)
+      .where(eq(leads.organizationId, organizationId));
   }
 
   async findOne(organizationId: string, id: string) {
-    const [lead] = await db.select().from(leads).where(and(eq(leads.id, id), eq(leads.organizationId, organizationId)));
+    const [lead] = await db
+      .select()
+      .from(leads)
+      .where(and(eq(leads.id, id), eq(leads.organizationId, organizationId)));
     if (!lead) throw new NotFoundException('Lead not found');
     return lead;
   }
@@ -25,7 +42,12 @@ export class LeadsService {
     organizationId: string,
     ownerId: string,
     leadId: string,
-    dto: { pipelineId: string; stageId: string; dealTitle: string; dealValue?: number },
+    dto: {
+      pipelineId: string;
+      stageId: string;
+      dealTitle: string;
+      dealValue?: number;
+    },
   ) {
     const lead = await this.findOne(organizationId, leadId);
     if (lead.status === 'converted') {
@@ -39,7 +61,12 @@ export class LeadsService {
         const [existing] = await tx
           .select({ id: accounts.id })
           .from(accounts)
-          .where(and(eq(accounts.organizationId, organizationId), eq(accounts.name, lead.company)));
+          .where(
+            and(
+              eq(accounts.organizationId, organizationId),
+              eq(accounts.name, lead.company),
+            ),
+          );
         if (existing) {
           accountId = existing.id;
         } else {
@@ -52,7 +79,11 @@ export class LeadsService {
       } else {
         const [account] = await tx
           .insert(accounts)
-          .values({ organizationId, ownerId, name: lead.name ?? lead.email ?? 'Unnamed Account' })
+          .values({
+            organizationId,
+            ownerId,
+            name: lead.name ?? lead.email ?? 'Unnamed Account',
+          })
           .returning();
         accountId = account.id;
       }
@@ -87,7 +118,11 @@ export class LeadsService {
       // 4. Mark the lead as converted, linking the new records
       const [updatedLead] = await tx
         .update(leads)
-        .set({ status: 'converted', convertedContactId: contact.id, convertedDealId: deal.id })
+        .set({
+          status: 'converted',
+          convertedContactId: contact.id,
+          convertedDealId: deal.id,
+        })
         .where(eq(leads.id, leadId))
         .returning();
 

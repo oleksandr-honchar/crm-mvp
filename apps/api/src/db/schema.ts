@@ -76,8 +76,12 @@ export const deals = pgTable('deals', {
     .references(() => organizations.id),
   accountId: uuid('account_id').references(() => accounts.id),
   contactId: uuid('contact_id').references(() => contacts.id),
-  pipelineId: uuid('pipeline_id').references(() => pipelines.id),
-  stageId: uuid('stage_id').references(() => pipelineStages.id),
+  pipelineId: uuid('pipeline_id')
+    .notNull()
+    .references(() => pipelines.id),
+  stageId: uuid('stage_id')
+    .notNull()
+    .references(() => pipelineStages.id),
   title: text('title').notNull(),
   value: numeric('value').default('0'),
   currency: text('currency').default('USD'),

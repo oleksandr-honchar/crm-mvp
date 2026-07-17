@@ -1,5 +1,15 @@
 // apps/api/src/pipelines/pipelines.controller.ts
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { PipelinesService } from './pipelines.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -34,21 +44,43 @@ export class PipelinesController {
   @UseGuards(RolesGuard)
   @Roles('admin')
   @Post(':id/stages')
-  addStage(@Req() req: AuthenticatedRequest, @Param('id') id: string, @Body() dto: CreateStageDto) {
+  addStage(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() dto: CreateStageDto,
+  ) {
     return this.pipelinesService.addStage(req.user.organizationId, id, dto);
   }
 
   @UseGuards(RolesGuard)
   @Roles('admin')
   @Patch(':id/stages/:stageId')
-  updateStage(@Req() req: AuthenticatedRequest, @Param('id') id: string, @Param('stageId') stageId: string, @Body() dto: UpdateStageDto) {
-    return this.pipelinesService.updateStage(req.user.organizationId, id, stageId, dto);
+  updateStage(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Param('stageId') stageId: string,
+    @Body() dto: UpdateStageDto,
+  ) {
+    return this.pipelinesService.updateStage(
+      req.user.organizationId,
+      id,
+      stageId,
+      dto,
+    );
   }
 
   @UseGuards(RolesGuard)
   @Roles('admin')
   @Delete(':id/stages/:stageId')
-  removeStage(@Req() req: AuthenticatedRequest, @Param('id') id: string, @Param('stageId') stageId: string) {
-    return this.pipelinesService.removeStage(req.user.organizationId, id, stageId);
+  removeStage(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Param('stageId') stageId: string,
+  ) {
+    return this.pipelinesService.removeStage(
+      req.user.organizationId,
+      id,
+      stageId,
+    );
   }
 }

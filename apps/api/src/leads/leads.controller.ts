@@ -1,5 +1,13 @@
 // apps/api/src/leads/leads.controller.ts
-import { Body, Controller, Get, Param, Post, UseGuards, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { LeadsService } from './leads.service,';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import type { AuthenticatedRequest } from '../auth/types/authenticated-request';
@@ -13,7 +21,11 @@ export class LeadsController {
 
   @Post()
   create(@Req() req: AuthenticatedRequest, @Body() dto: CreateLeadDto) {
-    return this.leadsService.create(req.user.organizationId, req.user.userId, dto);
+    return this.leadsService.create(
+      req.user.organizationId,
+      req.user.userId,
+      dto,
+    );
   }
 
   @Get()
@@ -27,7 +39,16 @@ export class LeadsController {
   }
 
   @Post(':id/convert')
-  convert(@Req() req: AuthenticatedRequest, @Param('id') id: string, @Body() dto: ConvertLeadDto) {
-    return this.leadsService.convert(req.user.organizationId, req.user.userId, id, dto);
+  convert(
+    @Req() req: AuthenticatedRequest,
+    @Param('id') id: string,
+    @Body() dto: ConvertLeadDto,
+  ) {
+    return this.leadsService.convert(
+      req.user.organizationId,
+      req.user.userId,
+      id,
+      dto,
+    );
   }
 }

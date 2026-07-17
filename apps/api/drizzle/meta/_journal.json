@@ -15,6 +15,13 @@
       "when": 1784115616395,
       "tag": "0001_crazy_quasar",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784289010124,
+      "tag": "0002_nappy_doomsday",
+      "breakpoints": true
     }
   ]
 }
