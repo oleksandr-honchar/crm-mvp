@@ -16,11 +16,15 @@ import type { AuthenticatedRequest } from '@/auth/types/authenticated-request';
 import { CreateDealDto } from './dto/create-deal.dto';
 import { UpdateDealDto } from './dto/update-deal.dto';
 import { TransitionStageDto } from './dto/transition-stage.dto';
+import { TimelineService } from '../activities/timeline.service';
 
 @Controller('deals')
 @UseGuards(JwtAuthGuard)
 export class DealsController {
-  constructor(private dealsService: DealsService) {}
+  constructor(
+    private dealsService: DealsService,
+    private timelineService: TimelineService,
+  ) {}
 
   @Post()
   create(@Req() req: AuthenticatedRequest, @Body() dto: CreateDealDto) {
@@ -87,5 +91,10 @@ export class DealsController {
   @Delete(':id')
   remove(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
     return this.dealsService.softDelete(req.user.organizationId, id);
+  }
+
+  @Get(':id/timeline')
+  getTimeline(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
+    return this.timelineService.forDeal(req.user.organizationId, id);
   }
 }

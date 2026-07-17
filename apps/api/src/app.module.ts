@@ -8,6 +8,8 @@ import { ContactsModule } from './contacts/contacts.module';
 import { LeadsModule } from './leads/leads.module';
 import { PipelinesModule } from './pipelines/pipelines.module';
 import { DealsModule } from './deals/deals.module';
+import { ActivitiesModule } from './activities/activities.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -15,9 +17,11 @@ import { DealsModule } from './deals/deals.module';
     UsersModule,
     AccountsModule,
     ContactsModule,
+    ActivitiesModule,
     LeadsModule,
     PipelinesModule,
     DealsModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],

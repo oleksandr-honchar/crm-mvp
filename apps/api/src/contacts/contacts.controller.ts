@@ -15,11 +15,15 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import type { AuthenticatedRequest } from '../auth/types/authenticated-request';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { UpdateContactDto } from './dto/update-contact.dto';
+import { TimelineService } from '../activities/timeline.service';
 
 @Controller('contacts')
 @UseGuards(JwtAuthGuard)
 export class ContactsController {
-  constructor(private contactsService: ContactsService) {}
+  constructor(
+    private contactsService: ContactsService,
+    private timelineService: TimelineService,
+  ) {}
 
   @Post()
   create(@Req() req: AuthenticatedRequest, @Body() dto: CreateContactDto) {
@@ -52,5 +56,10 @@ export class ContactsController {
   @Delete(':id')
   remove(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
     return this.contactsService.softDelete(req.user.organizationId, id);
+  }
+
+  @Get(':id/timeline')
+  getTimeline(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
+    return this.timelineService.forContact(req.user.organizationId, id);
   }
 }
