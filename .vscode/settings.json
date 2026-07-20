@@ -1,0 +1,7 @@
+// .vscode/settings.json (repo root)
+{
+  "eslint.workingDirectories": [
+    { "directory": "apps/api", "changeProcessCWD": true },
+    { "directory": "apps/web", "changeProcessCWD": true }
+  ]
+}
