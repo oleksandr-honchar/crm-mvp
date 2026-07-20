@@ -13,6 +13,9 @@ import { AccountDetailPage } from './pages/AccountDetailPage';
 import { DealsListPage } from './pages/DealsListPage';
 import { ContactCreatePage } from './pages/ContactCreatePage';
 import { AccountCreatePage } from './pages/AccountCreatePage';
+import { LeadsListPage } from './pages/LeadsListPage';
+import { DealsBoardPage } from './pages/DealsBoardPage';
+import { DealDetailPage } from './pages/DealDetailPage';
 
 export default function App() {
   return (
@@ -36,6 +39,9 @@ export default function App() {
             <Route path="/deals" element={<DealsListPage />} />
             <Route path="/contacts/new" element={<ContactCreatePage />} />
             <Route path="/accounts/new" element={<AccountCreatePage />} />
+            <Route path="/leads" element={<LeadsListPage />} />
+            <Route path="/deals/board" element={<DealsBoardPage />} />
+            <Route path="/deals/:id" element={<DealDetailPage />} />
           </Route>
         </Routes>
       </AuthProvider>

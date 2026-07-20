@@ -7,6 +7,8 @@ const navItems = [
   { to: '/contacts', label: 'Contacts' },
   { to: '/accounts', label: 'Accounts' },
   { to: '/deals', label: 'Deals' },
+  { to: '/leads', label: 'Leads' },
+  { to: '/deals/board', label: 'Pipeline Board' },
 ];
 
 export function Layout() {

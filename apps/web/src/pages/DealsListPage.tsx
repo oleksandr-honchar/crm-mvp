@@ -1,6 +1,7 @@
 // apps/web/src/pages/DealsListPage.tsx
 import { useQuery } from '@tanstack/react-query';
 import { getDeals } from '../api/deals';
+import { Link } from 'react-router-dom';
 
 export function DealsListPage() {
   const {
@@ -26,7 +27,14 @@ export function DealsListPage() {
         <tbody>
           {deals?.map((d) => (
             <tr key={d.id} className="border-b hover:bg-gray-50">
-              <td className="py-2">{d.title}</td>
+              <td className="py-2">
+                <Link
+                  to={`/deals/${d.id}`}
+                  className="text-blue-600 hover:underline"
+                >
+                  {d.title}
+                </Link>
+              </td>
               <td className="py-2">${d.value}</td>
               <td className="py-2">
                 <span
