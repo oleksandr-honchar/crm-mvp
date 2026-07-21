@@ -3,9 +3,10 @@ import { ActivitiesService } from './activities.service';
 import { ActivitiesController } from './activities.controller';
 import { TimelineService } from './timeline.service';
 import { DealsModule } from '../deals/deals.module';
+import { EmbeddingsModule } from '../embeddings/embeddings.module';
 
 @Module({
-  imports: [forwardRef(() => DealsModule)],
+  imports: [forwardRef(() => DealsModule), EmbeddingsModule],
   controllers: [ActivitiesController],
   providers: [ActivitiesService, TimelineService],
   exports: [ActivitiesService, TimelineService],

@@ -7,7 +7,31 @@ import {
   numeric,
   integer,
   date,
+  customType,
 } from 'drizzle-orm/pg-core';
+
+// Minimal pgvector wire-format serialization — Postgres's vector type
+// accepts/returns a literal like "[0.1,0.2,0.3]". Inlined here instead of
+// depending on the `pgvector` npm package, which ships pure ESM and breaks
+// Jest's default transform (see: the transformIgnorePatterns rabbit hole).
+function vectorToSql(value: number[]): string {
+  return `[${value.join(',')}]`;
+}
+function vectorFromSql(value: string): number[] {
+  return value.slice(1, -1).split(',').map(Number);
+}
+
+const vector = customType<{ data: number[]; driverData: string }>({
+  dataType() {
+    return 'vector(1024)';
+  },
+  toDriver(value: number[]): string {
+    return vectorToSql(value);
+  },
+  fromDriver(value: string): number[] {
+    return vectorFromSql(value);
+  },
+});
 
 export const organizations = pgTable('organizations', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -124,4 +148,5 @@ export const activities = pgTable('activities', {
   completedAt: timestamp('completed_at', { withTimezone: true }),
   createdBy: uuid('created_by').references(() => users.id),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  embedding: vector('embedding'),
 });
