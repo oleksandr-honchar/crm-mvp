@@ -48,7 +48,10 @@ export function ContactsListPage() {
               <td className="py-2">{c.email}</td>
               <td className="py-2">{c.phone}</td>
               <td className="py-2">
-                <DeleteButton onDelete={() => deleteContact(c.id)} invalidateKey="contacts" />
+                <DeleteButton
+                  onDelete={() => deleteContact(c.id)}
+                  invalidateKey="contacts"
+                />
               </td>
             </tr>
           ))}

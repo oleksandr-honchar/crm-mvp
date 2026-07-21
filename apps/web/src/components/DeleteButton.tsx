@@ -7,7 +7,11 @@ interface DeleteButtonProps {
   label?: string;
 }
 
-export function DeleteButton({ onDelete, invalidateKey, label = 'Delete' }: DeleteButtonProps) {
+export function DeleteButton({
+  onDelete,
+  invalidateKey,
+  label = 'Delete',
+}: DeleteButtonProps) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({

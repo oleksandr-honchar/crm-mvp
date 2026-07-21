@@ -9,7 +9,12 @@ export interface Lead {
   status: string;
 }
 
-export async function createLead(values: { name: string; email: string; company: string; source: string }) {
+export async function createLead(values: {
+  name: string;
+  email: string;
+  company: string;
+  source: string;
+}) {
   const { data } = await apiClient.post('/leads', values);
   return data;
 }

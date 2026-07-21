@@ -17,11 +17,14 @@ export function DealsListPage() {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-      <h1 className="text-xl font-semibold">Deals</h1>
-      <Link to="/deals/new" className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700">
-        + New Deal
-      </Link>
-    </div>
+        <h1 className="text-xl font-semibold">Deals</h1>
+        <Link
+          to="/deals/new"
+          className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
+        >
+          + New Deal
+        </Link>
+      </div>
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b text-left text-gray-500">
@@ -57,7 +60,10 @@ export function DealsListPage() {
                 </span>
               </td>
               <td className="py-2">
-                <DeleteButton onDelete={() => deleteDeal(d.id)} invalidateKey="deals" />
+                <DeleteButton
+                  onDelete={() => deleteDeal(d.id)}
+                  invalidateKey="deals"
+                />
               </td>
             </tr>
           ))}

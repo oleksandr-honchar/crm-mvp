@@ -148,5 +148,20 @@ export const activities = pgTable('activities', {
   completedAt: timestamp('completed_at', { withTimezone: true }),
   createdBy: uuid('created_by').references(() => users.id),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+});
+
+export const activityChunks = pgTable('activity_chunks', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  activityId: uuid('activity_id')
+    .notNull()
+    .references(() => activities.id, { onDelete: 'cascade' }),
+  organizationId: uuid('organization_id')
+    .notNull()
+    .references(() => organizations.id),
+  entityType: text('entity_type').notNull(),
+  entityId: uuid('entity_id').notNull(),
+  chunkIndex: integer('chunk_index').notNull(),
+  body: text('body').notNull(),
   embedding: vector('embedding'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
 });

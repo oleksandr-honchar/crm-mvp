@@ -25,24 +25,26 @@ export class AiService {
 
     const results = dealId
       ? await db.execute(sql`
-          SELECT a.id, a.body, a.type, a.created_at,
-                 a.embedding <=> ${vectorLiteral}::vector AS distance
-          FROM activities a
-          WHERE a.organization_id = ${organizationId}
-            AND a.embedding IS NOT NULL
-            AND a.entity_type = 'deal'
-            AND a.entity_id = ${dealId}
-          ORDER BY distance
-          LIMIT 5
+        SELECT ac.id, ac.body, ac.chunk_index, a.type, a.created_at,
+                ac.embedding <=> ${vectorLiteral}::vector AS distance
+        FROM activity_chunks ac
+        JOIN activities a ON a.id = ac.activity_id
+        WHERE ac.organization_id = ${organizationId}
+            AND ac.embedding IS NOT NULL
+            AND ac.entity_type = 'deal'
+            AND ac.entity_id = ${dealId}
+        ORDER BY distance
+        LIMIT 5
         `)
       : await db.execute(sql`
-          SELECT a.id, a.body, a.type, a.created_at,
-                 a.embedding <=> ${vectorLiteral}::vector AS distance
-          FROM activities a
-          WHERE a.organization_id = ${organizationId}
-            AND a.embedding IS NOT NULL
-          ORDER BY distance
-          LIMIT 5
+        SELECT ac.id, ac.body, ac.chunk_index, a.type, a.created_at,
+                ac.embedding <=> ${vectorLiteral}::vector AS distance
+        FROM activity_chunks ac
+        JOIN activities a ON a.id = ac.activity_id
+        WHERE ac.organization_id = ${organizationId}
+            AND ac.embedding IS NOT NULL
+        ORDER BY distance
+        LIMIT 5
         `);
 
     const sources = results.rows as unknown as RetrievedActivity[];
@@ -81,6 +83,7 @@ Answer concisely, and reference which numbered context item(s) support your answ
     const response = await this.gemini.models.generateContent({
       model: 'gemini-flash-latest',
       contents: prompt,
+      config: { temperature: 0.2 }, // lower = more consistent/deterministic phrasing
     });
 
     return {
