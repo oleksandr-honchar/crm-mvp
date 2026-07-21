@@ -1,7 +1,8 @@
-// apps/web/src/pages/ContactsListPage.tsx
+// apps/web/src/pages/AccountsListPage.tsx
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { getAccounts } from '../api/accounts';
+import { getAccounts, deleteAccount } from '../api/accounts';
+import { DeleteButton } from '../components/DeleteButton';
 
 export function AccountsListPage() {
   const {
@@ -29,20 +30,24 @@ export function AccountsListPage() {
           <tr className="border-b text-left text-gray-500">
             <th className="py-2">Name</th>
             <th className="py-2">Domain</th>
+            <th className="py-2"></th>
           </tr>
         </thead>
         <tbody>
-          {accounts?.map((c) => (
-            <tr key={c.id} className="border-b hover:bg-gray-50">
+          {accounts?.map((acc) => (
+            <tr key={acc.id} className="border-b hover:bg-gray-50">
               <td className="py-2">
                 <Link
-                  to={`/accounts/${c.id}`}
+                  to={`/accounts/${acc.id}`}
                   className="text-blue-600 hover:underline"
                 >
-                  {c.name}
+                  {acc.name}
                 </Link>
               </td>
-              <td className="py-2">{c.domain}</td>
+              <td className="py-2">{acc.domain}</td>
+              <td className="py-2">
+                <DeleteButton onDelete={() => deleteAccount(acc.id)} invalidateKey="accounts" />
+              </td>
             </tr>
           ))}
         </tbody>

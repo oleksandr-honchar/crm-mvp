@@ -1,8 +1,10 @@
 // apps/web/src/pages/LeadsListPage.tsx
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getLeads, convertLead } from '../api/leads';
+import { getLeads, convertLead, deleteLead } from '../api/leads';
+import { DeleteButton } from '../components/DeleteButton';
 import { getPipelines, getPipelineWithStages } from '../api/pipelines';
+import { Link } from 'react-router-dom';
 
 export function LeadsListPage() {
   const queryClient = useQueryClient();
@@ -50,13 +52,19 @@ export function LeadsListPage() {
 
   return (
     <div>
-      <h1 className="mb-4 text-xl font-semibold">Leads</h1>
+      <div className="mb-4 flex items-center justify-between">
+      <h1 className="text-xl font-semibold">Leads</h1>
+      <Link to="/leads/new" className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700">
+        + New Lead
+      </Link>
+    </div>
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b text-left text-gray-500">
             <th className="py-2">Name</th>
             <th className="py-2">Company</th>
             <th className="py-2">Status</th>
+            <th className="py-2"></th>
             <th className="py-2"></th>
           </tr>
         </thead>
@@ -78,6 +86,9 @@ export function LeadsListPage() {
                     Convert
                   </button>
                 )}
+              </td>
+              <td className="py-2">
+                <DeleteButton onDelete={() => deleteLead(lead.id)} invalidateKey="leads" />
               </td>
             </tr>
           ))}

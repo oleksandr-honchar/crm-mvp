@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Delete,
   UseGuards,
   Req,
 } from '@nestjs/common';
@@ -50,5 +51,10 @@ export class LeadsController {
       id,
       dto,
     );
+  }
+
+  @Delete(':id')
+  remove(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
+    return this.leadsService.remove(req.user.organizationId, id);
   }
 }

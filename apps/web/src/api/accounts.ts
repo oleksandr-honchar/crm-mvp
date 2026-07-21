@@ -17,8 +17,11 @@ export async function getAccount(id: string): Promise<Account> {
   return data;
 }
 
-// apps/web/src/api/accounts.ts — add this function
 export async function createAccount(values: { name: string; domain: string }) {
   const { data } = await apiClient.post('/accounts', values);
   return data;
+}
+
+export async function deleteAccount(id: string) {
+  await apiClient.delete(`/accounts/${id}`);
 }

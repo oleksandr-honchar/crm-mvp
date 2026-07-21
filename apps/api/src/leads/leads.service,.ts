@@ -38,6 +38,12 @@ export class LeadsService {
     return lead;
   }
 
+  async remove(organizationId: string, id: string) {
+    await this.findOne(organizationId, id); // throws 404 if not found/wrong org
+    await db.delete(leads).where(and(eq(leads.id, id), eq(leads.organizationId, organizationId)));
+    return { deleted: true };
+  }
+
   async convert(
     organizationId: string,
     ownerId: string,

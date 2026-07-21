@@ -25,6 +25,11 @@ export interface Activity {
   createdAt: string;
 }
 
+export async function createDeal(values: { title: string; pipelineId: string; stageId: string; value?: number; accountId?: string; contactId?: string }) {
+  const { data } = await apiClient.post('/deals', values);
+  return data;
+}
+
 export async function getDeals(): Promise<Deal[]> {
   const { data } = await apiClient.get('/deals');
   return data;
@@ -53,4 +58,8 @@ export async function markDealWon(id: string) {
 export async function markDealLost(id: string) {
   const { data } = await apiClient.post(`/deals/${id}/lost`);
   return data;
+}
+
+export async function deleteDeal(id: string) {
+  await apiClient.delete(`/deals/${id}`);
 }

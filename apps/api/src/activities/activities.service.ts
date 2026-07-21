@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { db } from '../db';
 import { activities, contacts, deals, accounts, leads } from '../db/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, isNull } from 'drizzle-orm';
 
 type EntityType = 'contact' | 'deal' | 'account' | 'lead';
 
@@ -37,6 +37,7 @@ export class ActivitiesService {
             and(
               eq(contacts.id, entityId),
               eq(contacts.organizationId, organizationId),
+              isNull(contacts.deletedAt),
             ),
           );
         break;
@@ -48,6 +49,7 @@ export class ActivitiesService {
             and(
               eq(deals.id, entityId),
               eq(deals.organizationId, organizationId),
+              isNull(deals.deletedAt),
             ),
           );
         break;
@@ -59,6 +61,7 @@ export class ActivitiesService {
             and(
               eq(accounts.id, entityId),
               eq(accounts.organizationId, organizationId),
+              isNull(accounts.deletedAt),
             ),
           );
         break;

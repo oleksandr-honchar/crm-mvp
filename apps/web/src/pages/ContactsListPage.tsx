@@ -1,7 +1,8 @@
 // apps/web/src/pages/ContactsListPage.tsx
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { getContacts } from '../api/contacts';
+import { getContacts, deleteContact } from '../api/contacts';
+import { DeleteButton } from '../components/DeleteButton';
 
 export function ContactsListPage() {
   const {
@@ -30,6 +31,7 @@ export function ContactsListPage() {
             <th className="py-2">Name</th>
             <th className="py-2">Email</th>
             <th className="py-2">Phone</th>
+            <th className="py-2"></th>
           </tr>
         </thead>
         <tbody>
@@ -45,6 +47,9 @@ export function ContactsListPage() {
               </td>
               <td className="py-2">{c.email}</td>
               <td className="py-2">{c.phone}</td>
+              <td className="py-2">
+                <DeleteButton onDelete={() => deleteContact(c.id)} invalidateKey="contacts" />
+              </td>
             </tr>
           ))}
         </tbody>

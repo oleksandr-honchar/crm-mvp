@@ -11,9 +11,11 @@ export class CreateDealDto {
   @IsString()
   title!: string;
 
+  @IsOptional()
   @IsUUID()
   accountId?: string;
 
+  @IsOptional()
   @IsUUID()
   contactId?: string;
 

@@ -3,11 +3,11 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 
 const navItems = [
-  { to: '/', label: 'Dashboard' },
+  { to: '/', label: 'Dashboard', end: true },
   { to: '/contacts', label: 'Contacts' },
-  { to: '/accounts', label: 'Accounts' },
-  { to: '/deals', label: 'Deals' },
   { to: '/leads', label: 'Leads' },
+  { to: '/accounts', label: 'Accounts' },
+  { to: '/deals', label: 'Deals', end: true },
   { to: '/deals/board', label: 'Pipeline Board' },
 ];
 
@@ -23,6 +23,7 @@ export function Layout() {
             <NavLink
               key={item.to}
               to={item.to}
+              end={item.end}
               className={({ isActive }) =>
                 `block rounded px-3 py-2 text-sm ${isActive ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'}`
               }

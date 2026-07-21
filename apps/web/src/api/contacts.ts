@@ -29,3 +29,7 @@ export async function createContact(values: {
   const { data } = await apiClient.post('/contacts', values);
   return data;
 }
+
+export async function deleteContact(id: string) {
+  await apiClient.delete(`/contacts/${id}`);
+}
