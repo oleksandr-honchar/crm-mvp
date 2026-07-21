@@ -46,7 +46,10 @@ export function AccountsListPage() {
               </td>
               <td className="py-2">{acc.domain}</td>
               <td className="py-2">
-                <DeleteButton onDelete={() => deleteAccount(acc.id)} invalidateKey="accounts" />
+                <DeleteButton
+                  onDelete={() => deleteAccount(acc.id)}
+                  invalidateKey="accounts"
+                />
               </td>
             </tr>
           ))}

@@ -53,11 +53,14 @@ export function LeadsListPage() {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-      <h1 className="text-xl font-semibold">Leads</h1>
-      <Link to="/leads/new" className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700">
-        + New Lead
-      </Link>
-    </div>
+        <h1 className="text-xl font-semibold">Leads</h1>
+        <Link
+          to="/leads/new"
+          className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
+        >
+          + New Lead
+        </Link>
+      </div>
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b text-left text-gray-500">
@@ -88,7 +91,10 @@ export function LeadsListPage() {
                 )}
               </td>
               <td className="py-2">
-                <DeleteButton onDelete={() => deleteLead(lead.id)} invalidateKey="leads" />
+                <DeleteButton
+                  onDelete={() => deleteLead(lead.id)}
+                  invalidateKey="leads"
+                />
               </td>
             </tr>
           ))}

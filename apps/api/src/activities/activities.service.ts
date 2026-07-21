@@ -8,6 +8,8 @@ import { db } from '../db';
 import { activities, contacts, deals, accounts, leads } from '../db/schema';
 import { eq, and, isNull } from 'drizzle-orm';
 import { EmbeddingService } from '../embeddings/embedding.service';
+import { chunkText } from '../embeddings/chunk-text';
+import { activityChunks } from '../db/schema';
 
 type EntityType = 'contact' | 'deal' | 'account' | 'lead';
 
@@ -100,20 +102,6 @@ export class ActivitiesService {
   ) {
     await this.assertEntityInOrg(organizationId, dto.entityType, dto.entityId);
 
-    let embedding: number[] | undefined;
-    if (dto.body) {
-      try {
-        embedding = await this.embeddingService.embed(dto.body);
-      } catch (err) {
-        // Don't let an embedding failure block activity creation — the note
-        // still needs to save even if the AI-adjacent feature is degraded.
-        console.error(
-          'Embedding failed, activity will be saved without one:',
-          err,
-        );
-      }
-    }
-
     const [activity] = await db
       .insert(activities)
       .values({
@@ -124,10 +112,51 @@ export class ActivitiesService {
         body: dto.body,
         dueAt: dto.dueAt ? new Date(dto.dueAt) : undefined,
         createdBy,
-        embedding,
       })
       .returning();
+
+    if (dto.body) {
+      await this.embedActivityBody(
+        activity.id,
+        organizationId,
+        dto.entityType,
+        dto.entityId,
+        dto.body,
+      );
+    }
+
     return activity;
+  }
+
+  private async embedActivityBody(
+    activityId: string,
+    organizationId: string,
+    entityType: string,
+    entityId: string,
+    body: string,
+  ) {
+    const chunks = chunkText(body);
+    for (let i = 0; i < chunks.length; i++) {
+      try {
+        const embedding = await this.embeddingService.embed(chunks[i]);
+        await db.insert(activityChunks).values({
+          activityId,
+          organizationId,
+          entityType,
+          entityId,
+          chunkIndex: i,
+          body: chunks[i],
+          embedding,
+        });
+      } catch (err) {
+        // Same resilience principle as before — a failed chunk shouldn't
+        // block the others or the activity itself from being saved.
+        console.error(
+          `Embedding failed for chunk ${i} of activity ${activityId}:`,
+          err,
+        );
+      }
+    }
   }
 
   async findOne(organizationId: string, id: string) {

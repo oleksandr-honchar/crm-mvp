@@ -25,7 +25,14 @@ export interface Activity {
   createdAt: string;
 }
 
-export async function createDeal(values: { title: string; pipelineId: string; stageId: string; value?: number; accountId?: string; contactId?: string }) {
+export async function createDeal(values: {
+  title: string;
+  pipelineId: string;
+  stageId: string;
+  value?: number;
+  accountId?: string;
+  contactId?: string;
+}) {
   const { data } = await apiClient.post('/deals', values);
   return data;
 }
