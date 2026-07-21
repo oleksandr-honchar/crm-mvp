@@ -22,6 +22,20 @@
       "when": 1784289010124,
       "tag": "0002_nappy_doomsday",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1784632928763,
+      "tag": "0003_magical_lady_vermin",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1784634372668,
+      "tag": "0004_aberrant_boom_boom",
+      "breakpoints": true
     }
   ]
 }

@@ -7,11 +7,13 @@ import {
 import { db } from '../db';
 import { activities, contacts, deals, accounts, leads } from '../db/schema';
 import { eq, and, isNull } from 'drizzle-orm';
+import { EmbeddingService } from '../embeddings/embedding.service';
 
 type EntityType = 'contact' | 'deal' | 'account' | 'lead';
 
 @Injectable()
 export class ActivitiesService {
+  constructor(private embeddingService: EmbeddingService) {}
   /**
    * Validates the referenced entity exists AND belongs to the caller's org,
    * before allowing an activity to be attached to it. This is the same
@@ -97,6 +99,21 @@ export class ActivitiesService {
     },
   ) {
     await this.assertEntityInOrg(organizationId, dto.entityType, dto.entityId);
+
+    let embedding: number[] | undefined;
+    if (dto.body) {
+      try {
+        embedding = await this.embeddingService.embed(dto.body);
+      } catch (err) {
+        // Don't let an embedding failure block activity creation — the note
+        // still needs to save even if the AI-adjacent feature is degraded.
+        console.error(
+          'Embedding failed, activity will be saved without one:',
+          err,
+        );
+      }
+    }
+
     const [activity] = await db
       .insert(activities)
       .values({
@@ -107,6 +124,7 @@ export class ActivitiesService {
         body: dto.body,
         dueAt: dto.dueAt ? new Date(dto.dueAt) : undefined,
         createdBy,
+        embedding,
       })
       .returning();
     return activity;
