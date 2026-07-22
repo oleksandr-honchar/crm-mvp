@@ -4,11 +4,11 @@ import { useAuth } from '../auth/AuthContext';
 
 const navItems = [
   { to: '/', label: 'Dashboard', end: true },
+  { to: '/deals/board', label: 'Pipeline Board' },
   { to: '/contacts', label: 'Contacts' },
-  { to: '/leads', label: 'Leads' },
   { to: '/accounts', label: 'Accounts' },
   { to: '/deals', label: 'Deals', end: true },
-  { to: '/deals/board', label: 'Pipeline Board' },
+  { to: '/leads', label: 'Leads' },
 ];
 
 export function Layout() {

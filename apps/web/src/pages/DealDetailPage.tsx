@@ -11,6 +11,7 @@ import {
 import { createActivity } from '../api/activities';
 import { ActivityBadge } from '../components/ActivityBadge';
 import { AiSidebar } from '../components/AiSidebar';
+import { DealSummaryCard } from '../components/DealSummaryCard';
 
 export function DealDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -127,6 +128,8 @@ export function DealDetailPage() {
             <p className="mt-1 text-xs text-red-600">Failed to add note.</p>
           )}
         </div>
+
+        {deal && <DealSummaryCard dealId={deal.id} />}
 
         <h2 className="mb-3 text-sm font-semibold text-gray-700">Timeline</h2>
         {timelineLoading && (
