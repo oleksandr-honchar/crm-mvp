@@ -1,5 +1,4 @@
 // apps/web/src/pages/DealsBoardPage.tsx
-import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   DndContext,
@@ -60,7 +59,6 @@ function StageColumn({
 
 export function DealsBoardPage() {
   const queryClient = useQueryClient();
-  const [activeDealId, setActiveDealId] = useState<string | null>(null);
 
   const { data: deals, isLoading: dealsLoading } = useQuery({
     queryKey: ['deals'],
@@ -87,7 +85,6 @@ export function DealsBoardPage() {
   });
 
   function handleDragEnd(event: DragEndEvent) {
-    setActiveDealId(null);
     const { active, over } = event;
     if (!over) return; // dropped outside any column — no-op
 
@@ -117,10 +114,7 @@ export function DealsBoardPage() {
           Could not move deal — try again.
         </p>
       )}
-      <DndContext
-        onDragStart={(e) => setActiveDealId(e.active.id as string)}
-        onDragEnd={handleDragEnd}
-      >
+      <DndContext onDragEnd={handleDragEnd}>
         <div className="flex gap-4 overflow-x-auto pb-4">
           {pipelineDetail.stages.map((stage) => (
             <StageColumn
