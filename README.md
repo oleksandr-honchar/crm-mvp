@@ -9,8 +9,6 @@ A CRM built from scratch (auth, contacts, accounts, leads, pipelines, deals, act
 
 https://github.com/user-attachments/assets/d4296332-7e0c-4533-9152-6d4d6af3b2b4
 
-https://github.com/user-attachments/assets/d4296332-7e0c-4533-9152-6d4d6af3b2b4
-
 ---
 
 ## Architecture
