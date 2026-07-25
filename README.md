@@ -5,6 +5,8 @@ A CRM built from scratch (auth, contacts, accounts, leads, pipelines, deals, act
 **Live demo:** `https://crm-mvp-1-h9aq.onrender.com`
 **Demo login:** `admin@test.com` / `password123` (or link your Gist here once it exists)
 
+https://github.com/user-attachments/assets/d4296332-7e0c-4533-9152-6d4d6af3b2b4
+
 ---
 
 ## Architecture
