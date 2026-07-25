@@ -25,14 +25,15 @@ export function AiSidebar({ dealId }: AiSidebarProps) {
         ...h,
         { question: q, answer: response.answer, sources: response.sources },
       ]);
-      setQuery('');
     },
   });
 
   function handleAsk(e: React.FormEvent) {
     e.preventDefault();
     if (!query.trim() || mutation.isPending) return;
-    mutation.mutate(query);
+    const currentQuery = query;
+    setQuery('');
+    mutation.mutate(currentQuery);
   }
 
   if (!open) {
