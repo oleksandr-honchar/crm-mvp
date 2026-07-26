@@ -4,9 +4,10 @@ import { AiService } from './ai.service';
 import { AiController } from './ai.controller';
 import { EmbeddingsModule } from '../embeddings/embeddings.module';
 import { ActivitiesModule } from '../activities/activities.module';
+import { DealsModule } from '../deals/deals.module';
 
 @Module({
-  imports: [EmbeddingsModule, ActivitiesModule],
+  imports: [EmbeddingsModule, ActivitiesModule, DealsModule],
   controllers: [AiController],
   providers: [AiService],
 })
