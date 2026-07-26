@@ -14,7 +14,7 @@ interface RetrievedActivity {
   distance: number;
 }
 
-interface DealSummary {
+export interface DealSummary {
   painPoints: string;
   nextSteps: string;
   closeLikelihood: string;
