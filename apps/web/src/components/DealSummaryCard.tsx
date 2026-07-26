@@ -18,11 +18,19 @@ export function DealSummaryCard({ dealId }: { dealId: string }) {
           disabled={mutation.isPending}
           className="rounded bg-indigo-600 px-3 py-1.5 text-xs text-white hover:bg-indigo-700 disabled:opacity-50"
         >
-          {mutation.isPending ? 'Generating...' : summary ? 'Regenerate' : '✨ Generate Summary'}
+          {mutation.isPending
+            ? 'Generating...'
+            : summary
+              ? 'Regenerate'
+              : '✨ Generate Summary'}
         </button>
       </div>
 
-      {mutation.isError && <p className="text-sm text-red-600">Failed to generate summary — try again.</p>}
+      {mutation.isError && (
+        <p className="text-sm text-red-600">
+          Failed to generate summary — try again.
+        </p>
+      )}
 
       {summary && (
         <div className="space-y-3 text-sm">
@@ -38,14 +46,20 @@ export function DealSummaryCard({ dealId }: { dealId: string }) {
             </div>
           </div>
           <div>
-            <p className="text-xs font-medium text-gray-500">Close Likelihood</p>
-            <p className="font-medium text-gray-800">{summary.closeLikelihood}</p>
+            <p className="text-xs font-medium text-gray-500">
+              Close Likelihood
+            </p>
+            <p className="font-medium text-gray-800">
+              {summary.closeLikelihood}
+            </p>
           </div>
         </div>
       )}
 
       {!summary && !mutation.isPending && (
-        <p className="text-sm text-gray-400">Click "Generate Summary" to get an AI-powered overview of this deal.</p>
+        <p className="text-sm text-gray-400">
+          Click "Generate Summary" to get an AI-powered overview of this deal.
+        </p>
       )}
     </div>
   );

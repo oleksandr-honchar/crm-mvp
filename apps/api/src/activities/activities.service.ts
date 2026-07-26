@@ -136,26 +136,20 @@ export class ActivitiesService {
     body: string,
   ) {
     const chunks = chunkText(body);
-    for (let i = 0; i < chunks.length; i++) {
-      try {
-        const embedding = await this.embeddingService.embed(chunks[i]);
-        await db.insert(activityChunks).values({
-          activityId,
-          organizationId,
-          entityType,
-          entityId,
-          chunkIndex: i,
-          body: chunks[i],
-          embedding,
-        });
-      } catch (err) {
-        // Same resilience principle as before — a failed chunk shouldn't
-        // block the others or the activity itself from being saved.
-        console.error(
-          `Embedding failed for chunk ${i} of activity ${activityId}:`,
-          err,
-        );
-      }
+    try {
+      const embeddings = await this.embeddingService.embedBatch(chunks); // one API call for all chunks
+      const rows = chunks.map((chunkBody, i) => ({
+        activityId,
+        organizationId,
+        entityType,
+        entityId,
+        chunkIndex: i,
+        body: chunkBody,
+        embedding: embeddings[i],
+      }));
+      await db.insert(activityChunks).values(rows); // single batched insert too
+    } catch (err) {
+      console.error(`Embedding failed for activity ${activityId}:`, err);
     }
   }
 
@@ -193,6 +187,18 @@ export class ActivitiesService {
         ),
       )
       .returning();
+
+    if (dto.body) {
+      await db.delete(activityChunks).where(eq(activityChunks.activityId, id));
+      await this.embedActivityBody(
+        id,
+        organizationId,
+        updated.entityType,
+        updated.entityId,
+        dto.body,
+      );
+    }
+
     return updated;
   }
 

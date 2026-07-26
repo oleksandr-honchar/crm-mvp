@@ -129,7 +129,9 @@ export function DealDetailPage() {
           )}
         </div>
 
-        {deal && <DealSummaryCard dealId={deal.id} />}
+        {deal && (
+          <DealSummaryCard key={timeline?.length ?? 0} dealId={deal.id} />
+        )}
 
         <h2 className="mb-3 text-sm font-semibold text-gray-700">Timeline</h2>
         {timelineLoading && (
