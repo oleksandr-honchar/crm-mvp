@@ -54,6 +54,8 @@ export class TimelineService {
   }
 
   private sortByDate<T extends { createdAt: Date | null }>(items: T[]): T[] {
-    return [...items].sort((a, b) => (b.createdAt?.getTime() ?? 0) - (a.createdAt?.getTime() ?? 0));
+    return [...items].sort(
+      (a, b) => (b.createdAt?.getTime() ?? 0) - (a.createdAt?.getTime() ?? 0),
+    );
   }
 }

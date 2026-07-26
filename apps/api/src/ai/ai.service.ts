@@ -1,6 +1,6 @@
 // apps/api/src/ai/ai.service.ts
 import { Injectable } from '@nestjs/common';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, Type } from '@google/genai';
 import { EmbeddingService } from '../embeddings/embedding.service';
 import { TimelineService } from '../activities/timeline.service';
 import { db } from '../db';
@@ -10,8 +10,15 @@ interface RetrievedActivity {
   id: string;
   body: string | null;
   type: string;
-  createdAt: Date | null;
+  createdAt: string | Date | null;
   distance: number;
+}
+
+interface DealSummary {
+  painPoints: string;
+  nextSteps: string;
+  closeLikelihood: string;
+  summary: string;
 }
 
 @Injectable()
@@ -23,6 +30,17 @@ export class AiService {
     private timelineService: TimelineService,
   ) {}
 
+  /**
+   * Helper to safely format optional or null dates without throwing TS or runtime errors.
+   */
+  private formatDate(date: string | Date | null | undefined): string {
+    if (!date) return 'Unknown date';
+    const parsed = new Date(date);
+    return isNaN(parsed.getTime())
+      ? 'Unknown date'
+      : parsed.toISOString().slice(0, 10);
+  }
+
   async chat(organizationId: string, query: string, dealId?: string) {
     const t0 = performance.now();
     const queryEmbedding = await this.embeddingService.embed(query);
@@ -30,7 +48,6 @@ export class AiService {
 
     const vectorLiteral = `[${queryEmbedding.join(',')}]`;
 
-    // Alias a.created_at AS "createdAt" in raw SQL to match the TypeScript interface
     const results = dealId
       ? await db.execute(sql`
         SELECT ac.id, ac.body, ac.chunk_index, a.type, a.created_at,
@@ -57,11 +74,7 @@ export class AiService {
     const t2 = performance.now();
 
     const sources = results.rows as unknown as RetrievedActivity[];
-    const RELEVANCE_THRESHOLD = 0.85; // deliberately loose — a coarse "nothing at all relevant" cutoff,
-    // not a precision filter. The LLM's own grounding instruction is
-    // the primary defense against weak-context hallucination; this
-    // threshold only exists to skip the LLM call entirely when
-    // literally nothing in the top-5 is even plausibly related.
+    const RELEVANCE_THRESHOLD = 0.85;
     const relevantSources = sources.filter(
       (s) => s.distance < RELEVANCE_THRESHOLD,
     );
@@ -81,7 +94,7 @@ export class AiService {
     const context = relevantSources
       .map(
         (s, i) =>
-          `[${i + 1}] (${s.type}, ${s.createdAt?.toISOString().slice(0, 10)}): ${s.body}`,
+          `[${i + 1}] (${s.type}, ${this.formatDate(s.createdAt)}): ${s.body}`,
       )
       .join('\n');
 
@@ -98,7 +111,7 @@ export class AiService {
     const response = await this.gemini.models.generateContent({
       model: 'gemini-flash-latest',
       contents: prompt,
-      config: { temperature: 0.2 }, // lower = more consistent/deterministic phrasing
+      config: { temperature: 0.2 },
     });
     const t4 = performance.now();
 
@@ -122,9 +135,7 @@ export class AiService {
   }
 
   async summarizeDeal(organizationId: string, dealId: string) {
-    console.time('1. Timeline Query');
     const timeline = await this.timelineService.forDeal(organizationId, dealId);
-    console.timeEnd('1. Timeline Query');
 
     if (timeline.length === 0) {
       return {
@@ -136,7 +147,7 @@ export class AiService {
     }
 
     const activityLog = timeline
-      .map((a) => `- (${a.type}, ${a.createdAt?.toISOString().slice(0, 10)}): ${a.body}`)
+      .map((a) => `- (${a.type}, ${this.formatDate(a.createdAt)}): ${a.body}`)
       .join('\n');
 
     const prompt = `You are a sales assistant analyzing a CRM deal's activity history. Based on the log below, produce a structured summary.
@@ -150,28 +161,58 @@ export class AiService {
     CLOSE LIKELIHOOD: <one of: Low, Medium, High — plus a brief one-sentence reason>
     SUMMARY: <2-3 sentence overall summary of where this deal stands>`;
 
-    console.time('2. Gemini Summary Generation');
+    // Gemini Structured Outputs via responseSchema
     const response = await this.gemini.models.generateContent({
       model: 'gemini-flash-latest',
       contents: prompt,
-      config: { temperature: 0.2 },
+      config: {
+        temperature: 0.2,
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            painPoints: {
+              type: Type.STRING,
+              description:
+                "1-2 sentences on the client's main concerns or blockers",
+            },
+            nextSteps: {
+              type: Type.STRING,
+              description: '1-2 sentences on what needs to happen next',
+            },
+            closeLikelihood: {
+              type: Type.STRING,
+              description: 'One of Low, Medium, High — plus a brief reason',
+            },
+            summary: {
+              type: Type.STRING,
+              description:
+                '2-3 sentence overall summary of where this deal stands',
+            },
+          },
+          required: ['painPoints', 'nextSteps', 'closeLikelihood', 'summary'],
+        },
+      },
     });
-    console.timeEnd('2. Gemini Summary Generation');
 
-    const text = response.text ?? '';
-    return this.parseSummary(text);
-  }
+    if (!response.text) {
+      return {
+        painPoints: 'Not available',
+        nextSteps: 'Not available',
+        closeLikelihood: 'Not available',
+        summary: 'Failed to generate deal summary.',
+      };
+    }
 
-  private parseSummary(text: string) {
-    const extract = (label: string) => {
-      const match = text.match(new RegExp(`${label}:\\s*(.+?)(?=\\n[A-Z ]+:|$)`, 's'));
-      return match ? match[1].trim() : 'Not available';
-    };
-    return {
-      painPoints: extract('PAIN POINTS'),
-      nextSteps: extract('NEXT STEPS'),
-      closeLikelihood: extract('CLOSE LIKELIHOOD'),
-      summary: extract('SUMMARY'),
-    };
+    try {
+      return JSON.parse(response.text) as DealSummary;
+    } catch {
+      return {
+        painPoints: 'Error parsing summary',
+        nextSteps: 'Error parsing summary',
+        closeLikelihood: 'Error parsing summary',
+        summary: response.text,
+      };
+    }
   }
 }
