@@ -2,8 +2,11 @@
 
 A CRM built from scratch (auth, contacts, accounts, leads, pipelines, deals, activity timeline) with a Retrieval-Augmented Generation layer on top — ask natural-language questions about a deal or get an AI-generated summary, grounded in the actual notes logged against it.
 
-**Live demo:** `https://crm-mvp-1-h9aq.onrender.com`
+**Live demo:** https://crm-mvp-1-h9aq.onrender.com
+
 **Demo login:** `admin@test.com` / `password123`
+
+**Gist:** https://gist.github.com/oleksandr-honchar/c3ee6590632a0fe9ef091e037724b6ab
 
 ### 📹 3-Minute Walkthrough
 
@@ -110,12 +113,19 @@ Calibrated from real testing, not guessed. An earlier, tighter threshold (0.6) p
 
 ## Known limitations
 
-Documented here rather than hidden — these are conscious scope decisions for an MVP under time constraints, not oversights I'm unaware of.
+Documented here rather than hidden — these are conscious scope decisions for an MVP under time constraints, tracked and updated as they're resolved.
 
-- **Structured deal fields (value, stage, close date) aren't yet in the AI's retrieval context.** The AI currently only reads unstructured activity notes, not the deal record's own fields directly — meaning a question like "what's the deal value?" is answered by inference from note text rather than reading the actual `value` column. Straightforward fix: pass the deal object into the prompt context alongside retrieved notes.
-- **Editing an activity's body doesn't re-embed it.** The stored chunk/embedding still reflects the original text after an edit. Low impact currently (no "edit note" UI exists yet, only "add note"), but worth fixing before this becomes a real gap.
-- **Gemini generation is the latency bottleneck** (~5.7s of a ~6.1s total request, measured). Embedding (~400ms) and the pgvector query (~30ms) are both fast. Streaming the response, or trying a lighter model, are the two obvious next steps.
-- **No hybrid (keyword + semantic) search.** Pure vector search can miss exact-match queries (e.g., a specific company name) that a keyword index would catch reliably. Not implemented — the data volume here doesn't yet make the gap visible, and it's a well-scoped addition (`tsvector` + GIN index) if/when it does.
+### Resolved
+
+- ~~Structured deal fields (value, stage, close date) weren't in the AI's retrieval context~~ — **Fixed.** `chat()` now fetches the deal's actual database record alongside note retrieval, so factual questions (deal value, status) are answered from the real field, not inferred from note text.
+- ~~Editing an activity's body didn't re-embed it~~ — **Fixed.** `update()` now deletes stale chunks and regenerates embeddings when a note's body changes.
+- ~~Gemini generation was the latency bottleneck (~5.7s of ~6.1s total)~~ — **Fixed.** Root cause was the model alias (`gemini-flash-latest`) resolving to a variant with a mandatory thinking budget and a low daily request quota. Pinned to `gemini-3.5-flash-lite` (with `gemini-3.1-flash-lite` as a rate-limit fallback) — measured generation latency dropped to **~600ms**, a ~90% reduction, with no loss in answer quality.
+
+### Still open
+
+- **No hybrid (keyword + semantic) search.** Pure vector search can miss exact-match queries (e.g., a specific company name). Well-scoped next step (`tsvector` + GIN index), not implemented because current data volume doesn't make the gap visible yet.
+- **No rate limiting on auth endpoints.** `/auth/login` and `/auth/signup` have no brute-force protection yet.
+- **No automated CI pipeline.** Tests run locally; not yet gated on push/PR.
 
 ---
 
