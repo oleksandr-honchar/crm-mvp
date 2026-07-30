@@ -2,12 +2,6 @@
 
 A CRM built from scratch (auth, contacts, accounts, leads, pipelines, deals, activity timeline) with a Retrieval-Augmented Generation layer on top — ask natural-language questions about a deal or get an AI-generated summary, grounded in the actual notes logged against it.
 
-**Live demo:** https://crm-mvp-1-h9aq.onrender.com
-
-**Demo login:** `admin@test.com` / `password123`
-
-**Gist:** https://gist.github.com/oleksandr-honchar/c3ee6590632a0fe9ef091e037724b6ab
-
 ### 📹 3-Minute Walkthrough
 
 https://github.com/user-attachments/assets/d4296332-7e0c-4533-9152-6d4d6af3b2b4
